@@ -2,73 +2,75 @@
 
 Este projeto documenta a criação de um servidor web doméstico rodando em uma VM Linux, configurado para ser acessível por qualquer dispositivo na rede local (Intranet).
 
-## 📸 Topologia e Resultado Final
-
-
-<img width="783" height="361" alt="Image" src="https://github.com/user-attachments/assets/7c3f4293-ecd7-4aa0-a8d6-6d7a36b71098" />
-
-![Image](https://github.com/user-attachments/assets/9f6dc6b7-09f0-4c5d-b356-2582b9e7dd76)
-
 ## 🛠️ Tecnologias e Ferramentas
 * **Hypervisor:** VMware Workstation (Modo Bridge)
 * **SO:** Ubuntu Server 24.04 LTS
-* **Serviços:** Nginx (Web), OpenSSH (Acesso Remoto)
-* **Rede:** IPv4 Estático Manual
+* **Serviços (Softwares):** Nginx (Web Server), OpenSSH (Acesso Remoto)
+* **Protocolos:** HTTP (Porta 80), SSH (Porta 22), TCP/IP, ARP, IPv4
+* **Rede:** Endereçamento IPv4 Estático Manual
 
+## 📸 Topologia e Resultado Final
 
+<img width="783" alt="Topologia e Resultado" src="https://github.com/user-attachments/assets/7c3f4293-ecd7-4aa0-a8d6-6d7a36b71098" /><br>
 
-# 🏃‍♂️ Primeiro passo é criar uma máquina com virtual ubuntu server
+![Acesso Mobile](https://github.com/user-attachments/assets/9f6dc6b7-09f0-4c5d-b356-2582b9e7dd76)<br>
 
-Configurações mínimas ja seram suficientes
-Nossa configuração mais importante é a de rede, nossa VM tem q este em modo BRIDGE
+---
 
-* Explicação rapida sobre modo BRIDGE
-O modo Bridge faz sua máquina virtual (VM) agir como se fosse um dispositivo físico independente conectado diretamente ao seu roteador, "ignorando" o PC hospedeiro
-Como funciona: A VM ganha acesso direto à rede física e solicita um IP próprio ao seu roteador (DHCP), ficando na mesma faixa de IP do seu computador (ex: PC 192.168.1.10, VM 192.168.1.11). Para que serve: Permite que a VM seja visível e acessível por outros dispositivos na rede (como seu celular ou outro hosts conectadop a intranet).
+## 🏃‍♂️ 1. Criando a Máquina Virtual (Ubuntu Server)
 
-# ⚙️ Placa em modo BRIDGE 
+As configurações mínimas já serão suficientes. Nossa configuração mais importante é a de rede: a VM tem que estar em **modo BRIDGE**.
 
-🛠️ Primeiro problema e troboshoting
-Nesta etapa nosso virtualizado (VMware) estava colocado em modo automático e não encontravam o range de IP da nossa rede. Necessário colocar o IP e o gateway (Roteador doméstico) manualmente. (OBS: Caso nao saiba o IP e o gateway da sua rede use o CMD e atraves do comando IPconfig irar mostrar).
+### O que é o modo BRIDGE?
+O modo Bridge faz sua máquina virtual (VM) agir como se fosse um dispositivo físico independente conectado diretamente ao seu roteador, "ignorando" o PC hospedeiro.
+* **Como funciona:** A VM ganha acesso direto à rede física e solicita um IP próprio ao seu roteador (DHCP), ficando na mesma faixa de IP do seu computador (ex: PC 192.168.1.10, VM 192.168.1.11).
+* **Para que serve:** Permite que a VM seja visível e acessível por outros dispositivos na rede (como seu celular ou outros hosts conectados à intranet).
 
-<img width="567" height="279" alt="Image" src="https://github.com/user-attachments/assets/74ed8abd-3604-44b6-bb85-0d376ba80b7f" />
+---
 
-🛠️ segundo problema e troboshoting
-Caso voc esteja usando o WIFI sera necessário a configuração para o VMware encontra a sua placa de rede ou WIFI
-Va até a aba “Edit” > após va até a opção “VIRTUAL NETWORK EDITOR”
+## ⚙️ Configuração de Rede e Troubleshooting
 
-<img width="344" height="222" alt="Image" src="https://github.com/user-attachments/assets/4adb980b-94b1-4615-a2ad-eaa078e527fa" />
+### 🛠️ Primeiro Problema e Troubleshooting (IP Manual)
+Nesta etapa, nosso virtualizador (VMware) estava em modo automático e não encontrava o range de IP da nossa rede. Foi necessário configurar o IP e o Gateway (Roteador doméstico) manualmente.
+> **OBS:** Caso não saiba o IP e o gateway da sua rede, use o CMD no Windows e digite `ipconfig` para descobrir.
 
-Clique em “charge Settings” para habilitar os privilégios de administrador (Neste caso estou usando Windows). 
+<img width="567" alt="Configuração IP Manual VMware" src="https://github.com/user-attachments/assets/74ed8abd-3604-44b6-bb85-0d376ba80b7f" /><br>
 
-<img width="567" height="291" alt="Image" src="https://github.com/user-attachments/assets/33fbf573-e7b8-4694-946d-096f04198a2a" />
+### 🛠️ Segundo Problema e Troubleshooting (Wi-Fi vs Cabo)
+Caso você esteja usando Wi-Fi, é necessária uma configuração extra para o VMware encontrar sua placa de rede correta.
 
-Veja que minha VM ubuntu esta configurada para pegar a rede bridge da minha placa WI-FI, caso esteja usando conexão via cabo de rede, necessário usar sua placa de rede. 
+1. Vá até a aba **“Edit”** > **“Virtual Network Editor”**.
 
-<img width="546" height="207" alt="Image" src="https://github.com/user-attachments/assets/b1ecae32-6821-495e-aa91-dc06d50ec8de" />
+<img width="344" alt="Virtual Network Editor" src="https://github.com/user-attachments/assets/4adb980b-94b1-4615-a2ad-eaa078e527fa" /><br>
 
+2. Clique em **“Change Settings”** para habilitar privilégios de administrador.
 
-⚙️ Configurando e adicionando nossa VM a rede manualmente 
+<img width="567" alt="Change Settings" src="https://github.com/user-attachments/assets/33fbf573-e7b8-4694-946d-096f04198a2a" /><br>
 
-<img width="567" height="262" alt="Image" src="https://github.com/user-attachments/assets/acdaac5b-8b16-4a91-be5d-662bed6de4f9" />
+3. Garanta que a VM esteja configurada para pegar a rede bridge da sua placa Wi-Fi (se usar cabo, selecione a placa Ethernet).
 
+<img width="546" alt="Seleção de Placa Bridge" src="https://github.com/user-attachments/assets/b1ecae32-6821-495e-aa91-dc06d50ec8de" /><br>
 
-Como e uma rede doméstica não necessitamos de proxy 
+### Configuração no Ubuntu
+Configurando e adicionando nossa VM à rede manualmente:
 
+<img width="567" alt="Configuração Netplan" src="https://github.com/user-attachments/assets/acdaac5b-8b16-4a91-be5d-662bed6de4f9" /><br>
 
-# 💻 Agora com nossa VM já configurada, vamos aos comandos para subir o nosso servidor WEB Nginx
+*Como é uma rede doméstica, não necessitamos de proxy.*
 
-<strong> 1. Instalação do Servidor (No Terminal Linux) </strong>.
+---
 
+## 💻 2. Instalação e Configuração do Nginx
+
+### Instalação do Servidor (No Terminal Linux)
+ 
 Vamos baixar todas as atualizações via Bash: `sudo apt update'`
 
 Vamos baixar o pacote nginx: `sudo apt install nginx'`
 
 Vamos confirma se o pacote esta rodando: `sudo systemctl status nginx '`
 
-<img width="1013" height="263" alt="Image" src="https://github.com/user-attachments/assets/d7397abe-6a1e-44b7-897e-bbbfa4ee4a0d" />
-
-
+<img width="1013" alt="Status Nginx" src="https://github.com/user-attachments/assets/d7397abe-6a1e-44b7-897e-bbbfa4ee4a0d" /><br>
 
 <strong> 2. Criação da Página (O Painel) </strong>.
 
@@ -87,40 +89,22 @@ Vamos criar a página HTML personalizada.
 
 *(Para salvar no Nano: `Ctrl + O` -> `Enter` -> `Ctrl + X`)*
 
-<img width="1066" height="747" alt="Image" src="https://github.com/user-attachments/assets/584205b1-4a1f-4862-ad75-1cfa5bdcf163" />
+🛠️ Dica de Troubleshooting: Caso esteja usando o Ubuntu Server (sem interface gráfica), sugerimos instalar o pacote OpenSSH. Assim, você pode acessar a VM pelo terminal do Windows (CMD/PowerShell) e usar Ctrl+C / Ctrl+V para colar seu codigo HTMl.<br>
+
+<img width="1066" alt="Código HTML" src="https://github.com/user-attachments/assets/584205b1-4a1f-4862-ad75-1cfa5bdcf163" /><br>
 
 
-🛠️ Terceiro problema e troboshoting
-Obs: caso esteja usando direto no CLI ubuntu server sem interface grafica, sugirimos baixar o pacote SSH, e usar o CMD na sua maquina fisica no windows. assim habilitando o ctrl+c crtl-V
-
-
-<strong> 3. Configuração de Rede e Firewall </strong>.
+🔒 <strong> 3. Configuração de Rede e Firewall </strong>.
 
 Para que o celular consiga acessar, libere a porta e descubra seu IP.
 
-1. Liberar porta 80:Bash
+1. Liberar porta 80: `sudo ufw allow 'Nginx HTTP'`
     
-    `sudo ufw allow 'Nginx HTTP'`
-    
-2. Descobrir seu IP:Bash
-    
-    `ip addr` 192.168.86.50/24
-    
-    *(Procure o número depois de `inet`, ex: `192.168.0.25`)*.
+2. Descobrir seu IP: `ip addr` 192.168.86.50/24
+   *(Procure o número depois de `inet`, ex: `192.168.0.25`)*.
 
 
 <strong> ### 4. Como Acessar </strong>.
 
 Pegue o celular, conecte no Wi-Fi e digite no navegador:
 `http://SEU_IP_AQUI` (Ex: `http://192.168.0.25`)
-
-
-
-
-
-
-
-
-
-
-
